@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>3 Data management | Thijmen Weijgertze DataScience portofolio</title>
+  <meta name="description" content="3 Data management | Thijmen Weijgertze DataScience portofolio" />
+  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="3 Data management | Thijmen Weijgertze DataScience portofolio" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="3 Data management | Thijmen Weijgertze DataScience portofolio" />
+  
+  
+  
+
+<meta name="author" content="Thijmen Weijgertze" />
+
+
+<meta name="date" content="2023-06-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="c.-elegans-plate-experiment.html"/>
+<link rel="next" href="thijmen-weijgertze-datascience-cv.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/core-js-2.5.3/shim.min.js"></script>
+<script src="libs/react-17.0.0/react.min.js"></script>
+<script src="libs/react-17.0.0/react-dom.min.js"></script>
+<script src="libs/reactwidget-1.0.0/react-tools.js"></script>
+<script src="libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
+<link href="libs/reactable-0.4.4/reactable.css" rel="stylesheet" />
+<script src="libs/reactable-binding-0.4.4/reactable.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Main page</a>
+<ul>
+<li class="chapter" data-level="1.0.1" data-path="index.html"><a href="index.html#introduction"><i class="fa fa-check"></i><b>1.0.1</b> Introduction</a></li>
+<li class="chapter" data-level="1.0.2" data-path="index.html"><a href="index.html#contact-information"><i class="fa fa-check"></i><b>1.0.2</b> Contact information</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="c.-elegans-plate-experiment.html"><a href="c.-elegans-plate-experiment.html"><i class="fa fa-check"></i><b>2</b> C. Elegans plate experiment</a>
+<ul>
+<li class="chapter" data-level="2.0.1" data-path="c.-elegans-plate-experiment.html"><a href="c.-elegans-plate-experiment.html#setup"><i class="fa fa-check"></i><b>2.0.1</b> Setup</a></li>
+<li class="chapter" data-level="2.0.2" data-path="c.-elegans-plate-experiment.html"><a href="c.-elegans-plate-experiment.html#scatterplot"><i class="fa fa-check"></i><b>2.0.2</b> Scatterplot</a></li>
+<li class="chapter" data-level="2.0.3" data-path="c.-elegans-plate-experiment.html"><a href="c.-elegans-plate-experiment.html#normalizing-data"><i class="fa fa-check"></i><b>2.0.3</b> normalizing data</a></li>
+<li class="chapter" data-level="2.0.4" data-path="c.-elegans-plate-experiment.html"><a href="c.-elegans-plate-experiment.html#statistical-tests"><i class="fa fa-check"></i><b>2.0.4</b> Statistical tests</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="data-management.html"><a href="data-management.html"><i class="fa fa-check"></i><b>3</b> Data management</a></li>
+<li class="chapter" data-level="4" data-path="thijmen-weijgertze-datascience-cv.html"><a href="thijmen-weijgertze-datascience-cv.html"><i class="fa fa-check"></i><b>4</b> Thijmen Weijgertze DataScience CV</a>
+<ul>
+<li class="chapter" data-level="4.0.1" data-path="thijmen-weijgertze-datascience-cv.html"><a href="thijmen-weijgertze-datascience-cv.html#who-am-i"><i class="fa fa-check"></i><b>4.0.1</b> Who am I</a></li>
+<li class="chapter" data-level="4.0.2" data-path="thijmen-weijgertze-datascience-cv.html"><a href="thijmen-weijgertze-datascience-cv.html#my-education"><i class="fa fa-check"></i><b>4.0.2</b> My education</a></li>
+<li class="chapter" data-level="4.0.3" data-path="thijmen-weijgertze-datascience-cv.html"><a href="thijmen-weijgertze-datascience-cv.html#my-most-relevant-skills-related-to-datascience-alphabetical-order"><i class="fa fa-check"></i><b>4.0.3</b> My most relevant skills related to DataScience (alphabetical order)</a></li>
+<li class="chapter" data-level="4.0.4" data-path="thijmen-weijgertze-datascience-cv.html"><a href="thijmen-weijgertze-datascience-cv.html#contact-info"><i class="fa fa-check"></i><b>4.0.4</b> Contact info</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="relational-databases.html"><a href="relational-databases.html"><i class="fa fa-check"></i><b>5</b> Relational databases</a>
+<ul>
+<li class="chapter" data-level="5.0.1" data-path="relational-databases.html"><a href="relational-databases.html#setup-1"><i class="fa fa-check"></i><b>5.0.1</b> Setup</a></li>
+<li class="chapter" data-level="5.0.2" data-path="relational-databases.html"><a href="relational-databases.html#reading-in-files"><i class="fa fa-check"></i><b>5.0.2</b> Reading in files</a></li>
+<li class="chapter" data-level="5.0.3" data-path="relational-databases.html"><a href="relational-databases.html#inspecting-data"><i class="fa fa-check"></i><b>5.0.3</b> Inspecting data</a></li>
+<li class="chapter" data-level="5.0.4" data-path="relational-databases.html"><a href="relational-databases.html#making-the-data-tidy"><i class="fa fa-check"></i><b>5.0.4</b> Making the data tidy</a></li>
+<li class="chapter" data-level="5.0.5" data-path="relational-databases.html"><a href="relational-databases.html#inspecting-the-tidy-data"><i class="fa fa-check"></i><b>5.0.5</b> Inspecting the tidy data</a></li>
+<li class="chapter" data-level="5.0.6" data-path="relational-databases.html"><a href="relational-databases.html#exporting-the-tidy-data-as-.csv-and-.rds-format"><i class="fa fa-check"></i><b>5.0.6</b> Exporting the tidy data as .csv and .rds format</a></li>
+<li class="chapter" data-level="5.0.7" data-path="relational-databases.html"><a href="relational-databases.html#making-connection-to-the-dbeaver-database"><i class="fa fa-check"></i><b>5.0.7</b> Making connection to the DBeaver database</a></li>
+<li class="chapter" data-level="5.0.8" data-path="relational-databases.html"><a href="relational-databases.html#loading-files-into-the-database"><i class="fa fa-check"></i><b>5.0.8</b> Loading files into the database</a></li>
+<li class="chapter" data-level="5.0.9" data-path="relational-databases.html"><a href="relational-databases.html#inspecting-data-with-sql"><i class="fa fa-check"></i><b>5.0.9</b> Inspecting data with SQL</a></li>
+<li class="chapter" data-level="5.0.10" data-path="relational-databases.html"><a href="relational-databases.html#joining-the-tables-into-a-new-table"><i class="fa fa-check"></i><b>5.0.10</b> joining the tables into a new table</a></li>
+<li class="chapter" data-level="5.0.11" data-path="relational-databases.html"><a href="relational-databases.html#inspecting-the-joined-tidy-dataset"><i class="fa fa-check"></i><b>5.0.11</b> Inspecting the joined tidy dataset</a></li>
+<li class="chapter" data-level="5.0.12" data-path="relational-databases.html"><a href="relational-databases.html#plotting-the-flu_search-against-the-data-per-country-within-the-south-american-region"><i class="fa fa-check"></i><b>5.0.12</b> plotting the flu_search against the data per country within the South American region</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="twpackage.html"><a href="twpackage.html"><i class="fa fa-check"></i><b>6</b> twPackage</a>
+<ul>
+<li class="chapter" data-level="6.0.1" data-path="twpackage.html"><a href="twpackage.html#introduction-1"><i class="fa fa-check"></i><b>6.0.1</b> Introduction</a></li>
+<li class="chapter" data-level="6.0.2" data-path="twpackage.html"><a href="twpackage.html#installation"><i class="fa fa-check"></i><b>6.0.2</b> Installation</a></li>
+<li class="chapter" data-level="6.0.3" data-path="twpackage.html"><a href="twpackage.html#function-and-data-explanation"><i class="fa fa-check"></i><b>6.0.3</b> Function and data explanation</a></li>
+<li class="chapter" data-level="6.0.4" data-path="twpackage.html"><a href="twpackage.html#function-examples"><i class="fa fa-check"></i><b>6.0.4</b> Function examples</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="machine-learning.html"><a href="machine-learning.html"><i class="fa fa-check"></i><b>7</b> Machine learning</a></li>
+<li class="chapter" data-level="8" data-path="setup-2.html"><a href="setup-2.html"><i class="fa fa-check"></i><b>8</b> Setup</a>
+<ul>
+<li class="chapter" data-level="8.0.1" data-path="setup-2.html"><a href="setup-2.html#plan-of-action"><i class="fa fa-check"></i><b>8.0.1</b> Plan of action</a></li>
+<li class="chapter" data-level="8.1" data-path="setup-2.html"><a href="setup-2.html#the-tidymodels-get-started-guide"><i class="fa fa-check"></i><b>8.1</b> The Tidymodels get-started-guide</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="bibliography.html"><a href="bibliography.html"><i class="fa fa-check"></i><b>9</b> bibliography</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Thijmen Weijgertze DataScience portofolio</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="data-management" class="section level1 hasAnchor" number="3">
+<h1><span class="header-section-number">3</span> Data management<a href="data-management.html#data-management" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>I’ve a reorganized the folders of an older project using the principles of the Guerilla analytics framework. To illustrate the folder structure I’ve made a directory tree using the fs package.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="data-management.html#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating a directory tree</span></span>
+<span id="cb21-2"><a href="data-management.html#cb21-2" aria-hidden="true" tabindex="-1"></a>fs<span class="sc">::</span><span class="fu">dir_tree</span>(<span class="at">path =</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data_management&quot;</span>))</span></code></pre></div>
+<pre><code>## D:/thijmenweijgertze.github.io/data_management
+## ├── bclxl_onecut2_project
+## │   ├── bclxl_onecut2_project.Rproj
+## │   ├── data_bam
+## │   │   └── README.txt
+## │   ├── data_counts
+## │   │   └── README.txt
+## │   ├── data_fastq
+## │   │   └── README.txt
+## │   ├── data_fastqc
+## │   │   └── README.txt
+## │   ├── docs
+## │   │   ├── EindopdrachtDAUR2_V8.pdf
+## │   │   └── README.txt
+## │   ├── img
+## │   │   ├── OC2_700_1.png
+## │   │   ├── OC2_703_2.png
+## │   │   ├── README.txt
+## │   │   ├── SRR7866699_1.png
+## │   │   ├── SRR7866699_2.png
+## │   │   ├── SRR7866700_2.png
+## │   │   ├── SRR7866703_1.png
+## │   │   ├── SRR7866704_1.png
+## │   │   └── SRR7866704_2.png
+## │   ├── README.txt
+## │   └── rmd
+## │       ├── eind_opdracht.html
+## │       ├── eind_opdracht.Rmd
+## │       ├── eind_opdracht_dian_thijmen.html
+## │       ├── eind_opdracht_dian_thijmen.Rmd
+## │       └── README.txt
+## ├── hg38
+## │   ├── hg38_annotation
+## │   │   └── README.txt
+## │   ├── hg38_genome
+## │   │   └── README.txt
+## │   ├── hg38_index
+## │   │   └── README.txt
+## │   └── README.txt
+## ├── metagenomics_formatief
+## │   ├── data_bracken
+## │   │   ├── mock2.bracken
+## │   │   └── README.txt
+## │   ├── data_fastq
+## │   │   └── README.txt
+## │   ├── data_fastqc
+## │   │   ├── HU2_MOCK2_L001_R1_001_fastqc.html
+## │   │   ├── HU2_MOCK2_L001_R1_001_fastqc.zip
+## │   │   ├── HU2_MOCK2_L001_R2_001_fastqc.html
+## │   │   ├── HU2_MOCK2_L001_R2_001_fastqc.zip
+## │   │   └── README.txt
+## │   ├── data_kraken2
+## │   │   ├── mock2.report
+## │   │   ├── mock2_bracken_species.biom
+## │   │   ├── mock2_bracken_species.report
+## │   │   └── README.txt
+## │   ├── img
+## │   │   ├── fastqc_mock2_R1_per_base_quality.png
+## │   │   ├── fastqc_mock2_R2_per_base_quality.png
+## │   │   ├── kracken_principle.png
+## │   │   └── README.txt
+## │   ├── metagenomics_formatief.Rproj
+## │   ├── README.txt
+## │   ├── rmd
+## │   │   ├── Formatieve_opdracht.docx
+## │   │   ├── Formatieve_opdracht.html
+## │   │   ├── Formatieve_opdracht.Rmd
+## │   │   └── README.txt
+## │   └── yml
+## │       ├── README.txt
+## │       └── setup_meta_env.yml
+## ├── metagenomics_species_identification
+## │   ├── data_bracken
+## │   │   ├── mock1.bracken
+## │   │   └── README.txt
+## │   ├── data_fastq
+## │   │   └── README.txt
+## │   ├── data_fastqc
+## │   │   ├── HU1_MOCK1_L001_R1_001_fastqc.html
+## │   │   ├── HU1_MOCK1_L001_R1_001_fastqc.zip
+## │   │   ├── HU1_MOCK1_L001_R2_001_fastqc.html
+## │   │   ├── HU1_MOCK1_L001_R2_001_fastqc.zip
+## │   │   └── README.txt
+## │   ├── data_kraken2
+## │   │   ├── mock1.report
+## │   │   ├── mock1_bracken_species.biom
+## │   │   ├── mock1_bracken_species.report
+## │   │   └── README.txt
+## │   ├── img
+## │   │   ├── fastqc_mock1_R1_per_base_quality.png
+## │   │   ├── fastqc_mock1_R2_per_base_quality.png
+## │   │   └── README.txt
+## │   ├── metagenomics_species_identification.Rproj
+## │   ├── README.txt
+## │   ├── rmd
+## │   │   ├── aantekeningen.txt
+## │   │   ├── metagenomics_reader.html
+## │   │   ├── metagenomics_reader.Rmd
+## │   │   ├── original_metagenomics_reader.html
+## │   │   ├── original_metagenomics_reader.Rmd
+## │   │   └── README.txt
+## │   └── yml
+## │       ├── README.txt
+## │       └── setup_meta_env.yml
+## ├── README.txt
+## ├── rnaseq_fibroblast_iPSC
+## │   ├── data_bam
+## │   │   └── README.txt
+## │   ├── data_counts
+## │   │   └── README.txt
+## │   ├── data_fastq
+## │   │   └── README.txt
+## │   ├── data_fastqc
+## │   │   └── README.txt
+## │   ├── data_sampledata
+## │   │   ├── data_sampledata.csv
+## │   │   ├── raw
+## │   │   │   └── data_sampledata.csv
+## │   │   └── README.txt
+## │   ├── docs
+## │   │   ├── Notes.txt
+## │   │   ├── opdracht_info.html
+## │   │   └── README.txt
+## │   ├── README.txt
+## │   ├── rmd
+## │   │   ├── Formatieve_opdracht.Rmd
+## │   │   ├── README.txt
+## │   │   └── v01
+## │   │       └── Formatieve_opdracht.Rmd
+## │   └── rnaseq_fibroblast_iPSC.Rproj
+## └── rnaseq_reader
+##     ├── data_bam
+##     │   └── README.txt
+##     ├── data_counts
+##     │   └── README.txt
+##     ├── data_fastq
+##     │   └── README.txt
+##     ├── data_fastqc
+##     │   └── README.txt
+##     ├── docs
+##     │   ├── notes.txt
+##     │   ├── opdracht_info.html
+##     │   └── README.txt
+##     ├── README.txt
+##     ├── rmd
+##     │   ├── README.txt
+##     │   └── rnaseq_reader.Rmd
+##     └── rnaseq_reader.Rproj</code></pre>
+
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="c.-elegans-plate-experiment.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="thijmen-weijgertze-datascience-cv.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

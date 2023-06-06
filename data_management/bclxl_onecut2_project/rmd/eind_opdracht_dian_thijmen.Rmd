@@ -1,0 +1,402 @@
+---
+title: Verschil tussen fibroblasts met behandeld met BCLXL treatment en fibroblasten behandeld met BCLXL+ONECUT2
+author: "Dian Dupon & Thijmen Weijgertze"
+date: '`r Sys.Date()`'
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: lumen
+---
+<div style="text-align: justify"> 
+
+# Introductie
+
+De directe omzetting van een gedifferentieerde cel tot een ander celtype wordt ook wel transdifferentiatie genoemd. Bij transdifferentiatie wordt een transcriptiefactor in de fibroblasten tot overexpressie gebracht. In dit onderzoek werden door middel van transdifferentiatie fibroblasten omgezet tot hersencellen. Dit werd bereikt door overexpressie van de transcriptiefactor ONECUT2. Om dit te onderzoeken werden er in dit onderzoek twee condities opgezet: "ONECUT2+BCLXL" en "BCLXL" (controle). Voor dit onderzoek zijn de fibroblatsen uit één proefpersoon verkregen. Bij deze transcriptiefactor werd vermoed dat het fibroblasten kan omzetten naar hersencellen. Het doel van deze analyse was om te achterhalen wat het verschil is in genexpressie tussen de eerder genoemde condities. Hierbij werd de volgende onderzoeksvraag geformuleerd: Wat zijn de verschillen in genexpressie tussen BCLXL behandelde cellen en BCLXL+ONECUT2 behandelde cellen?
+
+# Packages laden
+
+```{r packages, warning=FALSE, message=FALSE}
+# inladen alle benodigde packages
+library(tidyverse)
+library(here)
+library(DESeq2)
+library(pheatmap)
+library(org.Hs.eg.db)
+library(GOstats)
+library(png)
+library(grid)
+library(gridExtra)
+```
+
+# analyseren fastq files
+
+```{r , echo=FALSE, fig.height=3, out.width= '100%', fig.cap="Figuur 1. Quality distribution: rechts de foward read quality scores range van 0 to 40 op de Phred scale. Links de reverse reads. Image 1 is afkomstig van SRR7866700_1. Image 2 is afkomstig van SRR7866703_2"}
+
+# Invoegen van afbeeldingen ter onderbouwing conclusies
+img1 <- rasterGrob(as.raster(readPNG("~/daur2/project/images/OC2_700_1.png")))
+img2 <- rasterGrob(as.raster(readPNG("~/daur2/project/images/OC2_703_2.png")))
+grid.arrange(img1, img2, ncol=3, top=textGrob("Per base quality distribution van de forward (rechts) en reverse (links) reads", gp=gpar(fontsize=10,font=8)))
+```
+
+Over het algemeen viel de "per base sequence quality" en de "per base quality score van de forward reads" van de samples binnen de normaalwaardes (zie linker figuur). De base quality scores van de condities waren gemiddeld hoog genoeg om de reads te vertrouwen. Deze waren namelijk hoger dan een score van 28. Echter waren er ook een aantal samples waarbij de phred scores niet binnen de normaalwaardes vielen (zie figuur rechts). Dit was bij elk sample het geval bij de reverse reads.
+
+# Genereren van de Counttable
+
+```
+# Object creëren met de dir input voor de .bam files
+bam_dir <- "/home/daur2/rnaseq/rnaseq_onecut/bam/"
+
+# Object creëren met de dir input voor de count tables
+counts_dir <- "/home/daur2/rnaseq/rnaseq_onecut/counts/"
+
+# Vector maken met namen voor de .bam files
+bam_files <- list.files(bam_dir, pattern = ".*[0349]\\.bam$", full.names = TRUE)
+
+# Reads per gen tellen met behulp van de NCBI RefSeq annotaties
+read_counts <- featureCounts(
+  
+  files = bam_files,
+  annot.inbuilt = "hg38",
+  useMetaFeatures = TRUE,
+  strandSpecific = 0,
+  isPairedEnd = TRUE, 
+  countReadPairs = TRUE, 
+  nthreads = 10
+)
+```
+
+# Creëren van een DESeq object
+
+```{r DESeq object, warning=FALSE, message=FALSE}
+# inlezen counts object
+read_counts_OC2 <- readRDS("/home/daur2/rnaseq/rnaseq_onecut/counts/read_counts_OC2.rds")
+
+# opslaan count matrix
+count_matrix <- read_counts_OC2$counts
+
+# Sample data importeren
+metadata_OC2 <- read.csv("/home/daur2/rnaseq/rnaseq_onecut/onecut_sampledata_OC2.csv")
+
+# class naar dataframe veranderen
+metadata_OC2 <- as.data.frame(metadata_OC2)
+
+# rownames toevoegen aan metadata_OC2
+rownames(metadata_OC2) <- paste0(metadata_OC2$Run, ".bam")
+
+# controleren of de col names van de count table gelijk zijn aan de rownames van metadata_OC2
+colnames(count_matrix) == rownames(metadata_OC2) 
+
+# Een factor maken van celltype
+metadata_OC2$Cell_type <- metadata_OC2$Cell_type %>% 
+  factor(levels = c("Skin derived fibroblast overexpressing Bclxl", "2 days after induction of OC2 in skin derived fibroblasts"))
+
+# DESeq2 object aanmaken
+dds <- DESeqDataSetFromMatrix(
+  countData = count_matrix,
+  colData = metadata_OC2,
+  design = ~ Cell_type
+)
+```
+
+# PCA-analyse
+
+```{r normalizing and PCA analysis, warning=FALSE, message=FALSE}
+# normaliseren van de data door geoptimaliseerde log2 normalisatie
+dds_normalized <- rlog(dds)
+
+# uitvoeren PCA
+pca <- dds_normalized %>% assay() %>% t() %>% prcomp()
+
+# Het vinden van de proportie van variatie voor elke PC
+pca_summary <- summary(pca)$importance
+pca_summary
+
+# Creëren van een data frame met metadata en de PCA waarden voor het plotten
+pca_plotting <- cbind(metadata_OC2, pca$x)
+
+# Het verkrijgen van de variatiepercentages die gedekt worden door PC1, PC2, PC3 en PC4
+PC1_var <- round(pca_summary["Proportion of Variance", "PC1"]*100, digits = 1)
+PC2_var <- round(pca_summary["Proportion of Variance", "PC2"]*100, digits = 1)
+PC3_var <- round(pca_summary["Proportion of Variance", "PC3"]*100, digits = 1)
+PC4_var <- round(pca_summary["Proportion of Variance", "PC4"]*100, digits = 1)
+```
+
+```{r PC staafdiagram, warning=FALSE, message=FALSE, fig.cap="***Figuur 2; PC percentage staafdiagram,*** In het figuur staan de percentages van de PC summary"}
+# tibble aanmaken met de PC variablelen
+PC_percentages_table <- tibble(PC1_var, PC2_var, PC3_var, PC4_var)
+
+#tidy maken van de tibble
+PC_percentages_table <- pivot_longer(PC_percentages_table, cols = c(colnames(PC_percentages_table)), names_to = "PC", values_to = "percentage")
+PC_percentages_table$PC <- c("PC1", "PC2", "PC3", "PC4")
+head(PC_percentages_table)
+
+# PC percentages in een staafdiagram plotten
+PC_percentages_table %>%
+  ggplot(aes(x=PC, y=percentage))+
+  geom_col()+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))+
+  coord_cartesian (ylim =c(0,100))+
+  theme(legend.position="none")+
+  annotate("text", x = 1, y = PC1_var + 3, 
+           label = paste(PC1_var), colour = "black")+
+  annotate("text", x = 2, y = PC2_var + 3, 
+           label = paste(PC2_var), colour = "black")+
+  annotate("text", x = 3, y = PC3_var + 3, 
+           label = paste(PC3_var), colour = "black")+
+  annotate("text", x = 4, y = PC4_var + 3, 
+           label = paste(PC4_var), colour = "black")+
+  labs(
+    title = "PC variation percentages",
+    x = "",
+    y = "PC percentage (%)"
+  )
+```
+
+
+In figuur 2 is het percentage aan variatie per PC weergeven. Hieruit is geconcludeerd dat PC1 veel variatie vertoont, namelijk 94,6%, ten opzichte van de overige PC's; PC2 vertoonde een percentage van 3,1%, PC3 vertoonde een percentage van 2,3% en PC4 vertoonde een percentage van 0% aan variatie. 
+
+```{r PCA plot, warning=FALSE, message=FALSE, fig.cap="***Figuur 3; PCA plot van het onecut2 onderzoek,*** In het figuur staat PC1 tegenover PC2. De data is gegroepeerd op celltype. Alle celltypen zijn afkomstig van dezelfde cellijn: Fibroblast line 1 (CL1500023)"}
+
+# PC1 tegenover PC2 plotten
+ggplot(pca_plotting) + 
+  geom_point(aes(x=PC1, y=PC2, color = Cell_type, shape = Cell_line), size = 5) +
+  ggtitle("PCA voor het onecut2 onderzoek") +
+  xlab(paste0("PC1 (", PC1_var, "%)")) +
+  ylab(paste0("PC2 (", PC2_var, "%)")) +
+  theme_bw()
+```
+
+In figuur 3 was te zien dat PC1 94,4% van de variatie aan data in beslag neemt. Uit de PC1 variatie is geconcludeerd dat de data gegroepeerd was in twee groepen corresponderend met de condities "Skin derived fibroblast overexpressing Bclxl" en "2 days after induction of OC2 in skin derived fibroblasts". Hierdoor kon de data van de celtypes met elkaar vergeleken worden. PC2 nam 3,1% van de varatie in beslag. Aan PC2 was te zien dat de genexpressie van de fibroblasten met BCLXL in vergelijkbare mate voorkwam. Dit in tegenstelling tot de fibroblasten die waren blootgesteld aan OC2+BCLXL. Hierbij was een grote variatie aan genexpressie te zien.
+
+# Uitvoeren DGE analyse
+
+```{r dge analyse, warning=FALSE, message=FALSE}
+# dge analyse
+dge_analyse <- DESeq(dds)
+
+# resultaten van dge analyse verkrijgen
+# default settings
+dge_results <- results(dge_analyse)
+
+# resultaten met een threshold van lfc > 1 en alpha = 0.01
+dge_results_lfc1_alpha01 <- results(dge_analyse, lfcThreshold = 1, alpha = 0.01)
+```
+
+# Volcano plot opstellen
+
+```{r volcano plot, warning=FALSE, message=FALSE, fig.cap="***Figuur 4,*** In het figuur staat een volcano plot weergegeven met de log2 foldchange op de X-as tegenover de adjusted P waarde op de Y-as. De genen met een padj kleiner dan 0.01 en een log2 foldchange hoger dan 1 of -1 is oranjegemarkeerd. Zowel het aantal upgereguleerde als downgereguleerde genen staat geannoteerd in het figuur"}
+# Create a dataframe for plotting without genes with padj = NA
+dge_plotting <- data.frame(dge_results) %>% filter(!is.na(padj))
+
+# Kolom specificatie wanneer het gen significant verschillend tot expressie komt
+dge_plotting <- dge_plotting %>% 
+  mutate(signif = if_else(padj < 0.01 & abs(log2FoldChange) > 1, 
+                          "Significant", "Not significant"))
+
+# Aantal significante upregulated genen en significante downregulated genen tellen en opslaan in een variabelen
+sign_upregulated_genes <- data.frame(dge_results_lfc1_alpha01) %>% filter(!is.na(padj), padj < 0.01, log2FoldChange > 1) %>% nrow()
+sign_downregulated_genes <- data.frame(dge_results_lfc1_alpha01) %>% filter(!is.na(padj), padj < 0.01, log2FoldChange < -1) %>% nrow() 
+
+# Maken van een volcano plot
+dge_plotting %>% 
+  ggplot(aes(x = log2FoldChange, y = -log10(padj), color = signif)) +
+  geom_point() + 
+  xlab("log2 fold change") +
+  ylab("-log10 adjusted p-value") + 
+  theme_bw() +
+  
+  # Change the legend text and the colours
+  scale_colour_manual(values = c("grey", "darkorange"), name = "Significance") +
+  
+  # Aantal significante upregulated genen en significante downregulated genen annoteren
+  annotate("text", x = -5, y = 250, 
+           label = paste("Downregulated genes: \n", sign_downregulated_genes), colour = "black")+
+  annotate("text", x = 10, y = 250, 
+           label = paste("Upregulated genes: \n", sign_upregulated_genes), colour = "black")+
+  
+  # threshold bepalen door stippellijn
+  geom_hline(yintercept = -log10(0.01), linetype = "dashed")+
+  geom_vline(xintercept = 1, linetype = "dashed")+
+  geom_vline(xintercept = -1, linetype = "dashed")
+```
+
+
+In figuur 4 is de log2 foldchange op X-as tegenover de adjusted P waarde op de Y-as geplot. In het figuur zijn genen met een p-waarde van < 0,01 en een LFC waarde < -1 of > 1 als significant beschouwd. Deze significant beschouwde genen zijn oranje gekleurd en de threshold is met stippelijnen weergegeven. Er is geconcludeerd dat een zeer groot aantal genen een significant verschil in expressie laten zien. Verder is er geconcludeerd dat er meer significante genen zijn waarbij sprake is van upregulatie (1753) ten opzichte van downregulatie (939).
+
+# Pheatmap opstellen
+
+```{r pheatmap maar met symbols, warning=FALSE, message=FALSE, fig.cap="***Figuur 5,*** Heatmap van de 5 meest upgereguleerde en de 5 meest downgereguleerde genen"}
+# Filteren van de genen op p-waarde
+dge_results_filtered <- dge_results[which(dge_results$padj < 0.01),]
+
+# Verkrijgen top 5 upgereguleerde genen
+top_5_up <- dge_results_filtered[order(dge_results_filtered$log2FoldChange, decreasing = TRUE), ]
+top_5_up <- head(top_5_up, n=5)
+
+# Verkrijgen top 5 downgereguleerd genen
+top_5_down <- dge_results_filtered[order(dge_results_filtered$log2FoldChange, decreasing = FALSE), ]
+top_5_down <- head(top_5_down, n=5)
+
+# Data samenvoegen van de top 5 
+top10_genes <- rbind(top_5_up, top_5_down)
+top10_genes
+
+# entrezid kollom toevoegen
+top10_genes <- rownames(top10_genes) %>% data_frame()
+colnames(top10_genes)[1] <- "entrezid"
+
+# Obtain the count values for these genes
+count_values <- assay(dds)[top10_genes$entrezid,]
+
+# Gensymbolen gebasseerd op de Entrez identifiers
+rownames(count_values) <- mapIds(org.Hs.eg.db,
+                             keys = rownames(count_values),
+                             column = "SYMBOL",
+                             keytype = "ENTREZID",
+                             multiVals = "first")
+
+# Verander kolomnamen met condities
+colnames(count_values) <- colData(dds)$cell_type
+
+# Visualisatie in een heatmap
+pheatmap(count_values, scale = "row", show_rownames = TRUE)
+```
+
+In figuur 5 zijn de countvalues van de 5 meest upgereguleerde genen en de 5 meest downgereguleerde genen weergegeven. Dit waren de genen met een p-waarde van < 0,01. In deze pheatmap zijn de hoge LFC waardes weergeven met een rood/ oranje kleur en de lagere LFC waardes met een blauwe kleur. Uit de pheatmap in figuur 5 is geconcludeerd dat ONECUT2 zich bevond tot de top 5 upgereguleerde genen en daadwerkelijk door de transcriptiefactor OC-2 upgereguleerd is.
+
+# Entrez converter
+
+```{r entrezConverter functie, message=FALSE, warning=FALSE}
+entrezConverter <- function(entrez_id) {
+  # controleren of entrezid een string is    
+  stopifnot(is.character(entrezid))
+  
+  # Gegevens ophalen uit uit library org.Hs.eg.db
+  ensembl_id <- mapIds(org.Hs.eg.db, entrez_id, "ENSEMBL", "ENTREZID")
+  uniprot_id <- mapIds(org.Hs.eg.db, entrez_id, "UNIPROT", "ENTREZID")
+  gensymbols <- mapIds(org.Hs.eg.db, entrez_id, "SYMBOL", "ENTREZID")
+ 
+  # Maken van de tibble
+  result <- tibble(entrez_id = entrez_id,
+                   ensembl_id = ensembl_id,
+                   uniprot_id = uniprot_id,
+                   gensymbol = gensymbols)
+ 
+  return(result)
+}
+```
+
+# GOterm analyse
+
+```{r, message=FALSE, warning=FALSE}
+gotermAnalysis <- function(x, upregulated, lfc_limiter, padj_limiter){
+
+# stops the script in case of a wrong output  
+stopifnot(is.logical(upregulated))
+stopifnot(is.numeric(lfc_limiter))
+stopifnot(is.numeric(padj_limiter))
+stopifnot(padj_limiter > 0)
+
+# dge results opslaan in var
+dge_results <- x
+
+# if statement voor de upregulated logical 
+
+if(upregulated == TRUE){
+
+# Create a list of upregulated genes
+upregulated_genes <- dge_results %>% data.frame() %>% filter(log2FoldChange > lfc_limiter, padj < padj_limiter) %>% rownames()
+up_or_downregulated_genes <- upregulated_genes
+
+}else if(upregulated == FALSE)
+{
+  
+# lijst maken van downregulated genes
+downregulated_genes <- dge_results %>% data.frame() %>% filter(log2FoldChange < -(lfc_limiter), padj < padj_limiter) %>% rownames()
+up_or_downregulated_genes <- downregulated_genes
+
+}
+
+# Lijst aanmaken van alle genen in de dataframe
+all_genes <- dge_results %>% data.frame() %>% rownames()
+
+# uitvoeren GO term enrichment analysis
+test_object <- new("GOHyperGParams",
+                   geneIds = up_or_downregulated_genes,
+                   universeGeneIds = all_genes, 
+                   annotation = "org.Hs.eg.db", 
+                   ontology = "BP", 
+                   pvalueCutoff = 1,
+                   testDirection = "over")
+summary(hyperGTest(test_object))
+} 
+```
+
+```{r upregulated goterm analysis graph, message=FALSE, warning=TRUE, fig.cap="***Figuur 6,*** GO term enrichment analyse van de top 20 upgereguleerd genen"}
+### UPREGULATED GRAPH
+# opslaan goterm Analyse upregulated
+goterm_analysis_upregulated_results <- gotermAnalysis(
+  dge_results, 
+  upregulated = TRUE, 
+  lfc_limiter = 1, 
+  padj_limiter = 0.01)
+
+# P waarde aanpassen voor meerdere testen
+goterm_analysis_upregulated_results$padj <- p.adjust(goterm_analysis_upregulated_results$Pvalue, method = "BH")
+
+# Selecteren van genen die groter zijn dan 5 maar kleiner dan 500
+goterm_analysis_upregulated_results <- goterm_analysis_upregulated_results %>% filter(Count > 5) %>% filter(Count < 500)
+
+# selecteren top 20 GO terms
+goterm_analysis_up_top20 <- goterm_analysis_upregulated_results[order(goterm_analysis_upregulated_results$padj)[1:20],]
+
+# p-values van de top 20 GO terms plotten
+goterm_analysis_up_top20$Term <- factor(goterm_analysis_up_top20$Term, 
+                                     levels = goterm_analysis_up_top20$Term[
+                                       order(goterm_analysis_up_top20$padj, decreasing = TRUE)])
+goterm_analysis_up_top20 %>% ggplot(aes(x = Term, y = -log10(padj))) +
+  geom_point() +
+  coord_flip() +
+  ylab(expression(-log[10](adjusted~italic(P)~value))) + 
+  xlab("GO terms") +
+  ggtitle("Top 20 enriched GO terms\n for upregulated genes") +
+  theme_bw()
+```
+
+```{r downregulated goterm analysis graph, warning=FALSE, message=FALSE, fig.cap="***Figuur 7,*** GO term enrichment analyse van de top 20 downgereguleerd genen"}
+### DOWNREGULATED GRAPH
+# opslaan goterm Analyse downregulated
+goterm_analysis_downregulated_results <- gotermAnalysis(
+  dge_results, 
+  upregulated = FALSE, 
+  lfc_limiter = 1, 
+  padj_limiter = 0.01)
+
+# P waarde aanpassen voor meerdere testen
+goterm_analysis_downregulated_results$padj <- p.adjust(goterm_analysis_downregulated_results$Pvalue, method = "BH")
+
+# Selecteren van genen die groter zijn dan 5 maar kleiner dan 500
+goterm_analysis_downregulated_results <- goterm_analysis_downregulated_results %>% filter(Count > 5) %>% filter(Count < 500)
+
+# selecteren top 20 GO terms
+goterm_analysis_down_top20 <- goterm_analysis_downregulated_results[order(goterm_analysis_downregulated_results$padj)[1:20],]
+
+# p-values van de top 20 GO terms plotten
+goterm_analysis_down_top20$Term <- factor(goterm_analysis_down_top20$Term, 
+                                     levels = goterm_analysis_down_top20$Term[
+                                       order(goterm_analysis_down_top20$padj, decreasing = TRUE)])
+goterm_analysis_down_top20 %>% ggplot(aes(x = Term, y = -log10(padj))) +
+  geom_point() +
+  coord_flip() +
+  ylab(expression(-log[10](adjusted~italic(P)~value))) + 
+  xlab("GO terms") +
+  ggtitle("Top 20 enriched GO terms\n for downregulated genes") +
+  theme_bw()
+```
+
+
+Door de onderzoekers werd vermoed dat transdifferentiatie met ONECUT2 resulteert in de differentiatie van fibroblasten in hersencellen. Onder invloed van transcriptiefactor BCLXL+ONECUT2 (gedurende 2 uur) werden er genen anders gereguleerd ten opzichte van fibroblasten met alleen het transcriptiefactor BCLXL. Het viel in figuur 6 en 7 op dat genen met betrekking tot de hersenen en de eventuele differentiatie naar hersencellen upgereguleerd of downgereguleerd waren. Dit waren genen binnen GOterms als "neurogenesis", “generation of neurons”, “neuron differentiation”, “synaptic signaling” en “nervous system development”. Aan de hand van deze resultaten kon geconcludeerd worden dat het eerder genoemde vermoeden van de onderzoekers klopt.
+
+</div>

@@ -1,0 +1,9 @@
+# Data management
+
+I've a reorganized the folders of an older project using the principles of the Guerilla analytics framework. To illustrate the folder structure I've made a directory tree using the fs package.
+
+```{r}
+# Creating a directory tree
+fs::dir_tree(path = here::here("data_management"))
+```
+

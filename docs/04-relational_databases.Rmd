@@ -1,0 +1,247 @@
+# Relational databases
+
+```{r setup8, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, echo=TRUE)
+```
+
+### Setup
+
+```{r loading relational database packages}
+# loading packages
+library(tidyverse)
+library(dslabs)
+library(here)
+library(reactable)
+library(twPackage)
+```
+
+The flu and dengue data sets are retrieved from Google Inc. [*@googleinc.GoogleFluTrends2015 ; @googleinc.GoogleDengueTrends2015*]. The gapminder data set is retrieved from the dslabs package [*@irizarryDslabsDataScience2023*].
+
+### Reading in files
+
+```{r}
+# loading flu data
+flu_data <- read.csv(
+  here::here(
+    "data_relationalDatabases",
+    "flu_data.csv"
+  ),
+  skip = 11 # skip the first 11 lines
+)
+# loading dengue data
+dengue_data <- read.csv(
+  here::here(
+    "data_relationalDatabases",
+    "dengue_data.csv"
+  ),
+  skip = 11 # skip the first 11 lines
+)
+# loading gapminder data
+gap_data <- gapminder
+```
+
+### Inspecting data
+
+```{r}
+# inspecting flu data
+tw_table(flu_data, pagesize = 5)
+
+# inspecting dengue data 
+tw_table(dengue_data, pagesize = 5)
+
+# inspecting gapminder data 
+tw_table(gap_data, pagesize = 5)
+```
+
+The flu dataset must be changed into tidy format. The flu and dengue data tidy the countries will be stored under one column named "country". The date column will be separated into the columns: year, month and day.
+
+### Making the data tidy
+
+```{r}
+## making flu data tidy
+# creating the country column
+flu_tidy <- pivot_longer(
+  data = flu_data,
+  cols = c(Argentina:Uruguay),
+  values_to = "search_activity",
+  names_to = "country"
+    )
+# creating year month and date columns
+flu_tidy <- separate(
+  flu_tidy,  
+  Date,  
+  into = c("year", "month", "day"), 
+  convert = TRUE, 
+  sep = "-"
+  )
+
+## making dengue data tidy
+# creating the country column
+dengue_tidy <- pivot_longer(
+  data = dengue_data,
+  cols = c(Argentina:Venezuela),
+  values_to = "search_activity",
+  names_to = "country"
+    )
+# creating year month and date columns
+dengue_tidy <- separate(
+  dengue_tidy,  
+  Date,  
+  into = c("year", "month", "day"), 
+  convert = TRUE, 
+  sep = "-"
+  )
+
+# the gapminder data is already tidy
+gap_tidy <- gap_data
+
+```
+
+### Inspecting the tidy data
+
+```{r}
+# inspecting flu tidy
+tw_table(flu_tidy, pagesize = 5)
+
+# inspecting dengue tidy 
+tw_table(flu_tidy, pagesize = 5)
+
+# inspecting gapminder tidy 
+tw_table(flu_tidy, pagesize = 5)
+```
+
+### Exporting the tidy data as .csv and .rds format
+
+```{r, eval=F}
+# exporting flu tidy to .csv and .rds format
+tw_csv_rds(flu_tidy, "data_relationalDatabases/flu_tidy")
+
+# exporting dengue tidy to .csv and .rds format
+tw_csv_rds(dengue_tidy, "data_relationalDatabases/dengue_tidy")
+
+# exporting gap tidy to .csv and .rds format
+tw_csv_rds(gap_tidy, "data_relationalDatabases/gap_tidy")
+```
+
+### Making connection to the DBeaver database
+
+```{r loading packages to connect R with database}
+# loading packages to connect R with the database
+library(DBI)
+```
+
+```{r connecting with database}
+# connecting to database
+con <- dbConnect(RPostgres::Postgres(), 
+                 dbname = "workflowsdb", 
+                 host="localhost", 
+                 port="5432", 
+                 user="postgres", 
+                 password=readRDS(here::here("db_pass.rds"))) # put here your own password
+```
+
+### Loading files into the database
+
+```{r loading files into database, eval=F}
+# Connect with the database and export the data to DBeaver
+dbWriteTable(con, "flu_tidy", flu_tidy)
+dbWriteTable(con, "dengue_tidy", dengue_tidy)
+dbWriteTable(con, "gap_tidy", gap_tidy)
+```
+
+### Inspecting data with SQL
+
+In the following code blocks there will be examples of using SQL to inspect the database data.
+
+```{sql, connection=con}
+-- In specting dengue data with SQL
+select country from dengue_tidy; 
+```
+
+```{sql, connection=con}
+-- flu data from the Netherlands without NA values ordered by search_activity
+select * 
+from flu_tidy 
+where 
+  search_activity is not null and 
+  country='Netherlands'
+order by 
+  search_activity desc;
+```
+
+```{sql ,connection=con}
+-- amount of rows in dengue data without NA
+SELECT COUNT(*)
+FROM dengue_tidy
+where search_activity is not null;
+```
+
+### joining the tables into a new table
+
+The tables will be joined into a new table. This new table will be used later on to plot the flu_search against the data per country within the South American region. 
+
+```{sql,connection=con, eval=FALSE}
+-- joining the tables using SQL
+create table joined_tidy as
+SELECT -- columns to be included in the table
+flu_tidy.year,
+flu_tidy.month,
+flu_tidy.day,
+gap_tidy.continent,
+gap_tidy.region,
+flu_tidy.country,
+flu_tidy.search_activity as flu_search,
+dengue_tidy.search_activity as dengue_search
+FROM flu_tidy 
+  LEFT JOIN dengue_tidy ON -- joining the dengue dataset with the flu dataset based on date and country
+    dengue_tidy.year = flu_tidy.year AND
+    dengue_tidy.month = flu_tidy.month AND
+    dengue_tidy.day = flu_tidy.day AND
+    dengue_tidy.country = flu_tidy.country
+  LEFT JOIN gap_tidy ON -- joining the gapminder dataset with the flu dataset based on year and country
+    gap_tidy.year = flu_tidy.year AND
+    gap_tidy.country = flu_tidy.country;
+``` 
+[*@rahulAnswerCanJoin2014; @SQLJoinInner2016*]
+
+### Inspecting the joined tidy dataset
+
+```{sql connection=con, output.var = "joined_tidy"}
+-- inspecting the new table and saving to
+select *
+from joined_tidy 
+```
+
+The data is saved as a variable called joined_tidy by adding 'output.var="joined_tidy"' to the chunk header [@langtangAnswerSQLChunks2022].
+
+```{r}
+# inspecting joined tidy variable
+tw_table(joined_tidy, pagesize = 5)
+```
+
+```{r joined tidy to csv and rds, eval=FALSE}
+# exporting joined tidy to .csv and .rds format
+tw_csv_rds(joined_tidy, path = "data_relationalDatabases/joined_tidy")
+```
+
+```{r disconnecting database}
+# disconnecting from the database 
+# since the joined_tidy dataset is now stored in a R variable
+dbDisconnect(con)
+```
+
+### plotting the flu_search against the data per country within the South American region
+
+```{r}
+# plotting flu search against the date per South American country
+joined_tidy %>% 
+  mutate(date = mdy(paste(month,day,year, sep = "-"))) %>% 
+  filter(region == "South America") %>% 
+  select(flu_search, date, country, region) %>% 
+  na.omit() %>% 
+  ggplot(aes(x = date, y = flu_search, fill = country)) + 
+  geom_col(aes(colour = country)) + 
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  theme(axis.text.x=element_text(angle=60, hjust=1), legend.position = "none") +
+  facet_wrap(~country, scales='free')
+```

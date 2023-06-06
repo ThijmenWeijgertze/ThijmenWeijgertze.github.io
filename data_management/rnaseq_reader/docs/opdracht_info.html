@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Lesson 5 - Formatieve opdracht RNA-seq | Data Analysis Using R 2</title>
+  <meta name="description" content="Lesson 5 - Formatieve opdracht RNA-seq | Data Analysis Using R 2" />
+  <meta name="generator" content="bookdown 0.30 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Lesson 5 - Formatieve opdracht RNA-seq | Data Analysis Using R 2" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Lesson 5 - Formatieve opdracht RNA-seq | Data Analysis Using R 2" />
+  
+  
+  
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="lesson-4---rna-sequencing-part-4.html"/>
+<link rel="next" href="lesson-6---metagenomics-part-1.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="toc-logo"><a href="./"><img style="float:left;" src="images/voorbeeldlogo2.png"></a> <h4 class=".paddingtitel ">DAUR2 </h2></li>
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introduction</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#course-outline"><i class="fa fa-check"></i>Course outline</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#course-material"><i class="fa fa-check"></i>Course material</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#lessons"><i class="fa fa-check"></i>Lessons</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#formative-assessment"><i class="fa fa-check"></i>Formative assessment</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#exam"><i class="fa fa-check"></i>Exam</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-1---rna-sequencing-part-1.html"><a href="lesson-1---rna-sequencing-part-1.html"><i class="fa fa-check"></i>Lesson 1 - RNA sequencing (part 1)</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-1---rna-sequencing-part-1.html"><a href="lesson-1---rna-sequencing-part-1.html#learning-objectives"><i class="fa fa-check"></i>Learning objectives</a></li>
+<li class="chapter" data-level="" data-path="lesson-1---rna-sequencing-part-1.html"><a href="lesson-1---rna-sequencing-part-1.html#what-is-rna-sequencing"><i class="fa fa-check"></i>What is RNA sequencing?</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-1---rna-sequencing-part-1.html"><a href="lesson-1---rna-sequencing-part-1.html#the-different-steps-of-the-rna-seq-workflow"><i class="fa fa-check"></i>The different steps of the RNA-seq workflow</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-1---rna-sequencing-part-1.html"><a href="lesson-1---rna-sequencing-part-1.html#example-of-rna-seq-data-the-airway-study"><i class="fa fa-check"></i>Example of RNA-seq data: the airway study</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-1---rna-sequencing-part-1.html"><a href="lesson-1---rna-sequencing-part-1.html#the-experimental-details-of-the-airway-study"><i class="fa fa-check"></i>The experimental details of the airway study</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-1---rna-sequencing-part-1.html"><a href="lesson-1---rna-sequencing-part-1.html#obtaining-the-rna-seq-data"><i class="fa fa-check"></i>Obtaining the RNA-seq data</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-1---rna-sequencing-part-1.html"><a href="lesson-1---rna-sequencing-part-1.html#downloading-the-fastq-files-from-geosra"><i class="fa fa-check"></i>Downloading the fastq files from GEO/SRA</a></li>
+<li class="chapter" data-level="" data-path="lesson-1---rna-sequencing-part-1.html"><a href="lesson-1---rna-sequencing-part-1.html#checking-the-quality-of-the-fastq-files-using-fastqc"><i class="fa fa-check"></i>Checking the quality of the fastq files using fastqc</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-1---rna-sequencing-part-1.html"><a href="lesson-1---rna-sequencing-part-1.html#aligning-the-rna-seq-data-to-a-reference-genome"><i class="fa fa-check"></i>Aligning the RNA-seq data to a reference genome</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-1---rna-sequencing-part-1.html"><a href="lesson-1---rna-sequencing-part-1.html#the-challenges-of-aligning-rna-seq-reads"><i class="fa fa-check"></i>The challenges of aligning RNA-seq reads</a></li>
+<li class="chapter" data-level="" data-path="lesson-1---rna-sequencing-part-1.html"><a href="lesson-1---rna-sequencing-part-1.html#installing-and-using-the-rsubread-package"><i class="fa fa-check"></i>Installing and using the <code>Rsubread</code> package</a></li>
+<li class="chapter" data-level="" data-path="lesson-1---rna-sequencing-part-1.html"><a href="lesson-1---rna-sequencing-part-1.html#aligning-the-reads-of-the-airway-study"><i class="fa fa-check"></i>Aligning the reads of the airway study</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-1---rna-sequencing-part-1.html"><a href="lesson-1---rna-sequencing-part-1.html#formatieve-opdracht"><i class="fa fa-check"></i>Formatieve opdracht</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-2---rna-sequencing-part-2.html"><a href="lesson-2---rna-sequencing-part-2.html"><i class="fa fa-check"></i>Lesson 2 - RNA sequencing (part 2)</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-2---rna-sequencing-part-2.html"><a href="lesson-2---rna-sequencing-part-2.html#learning-objectives-1"><i class="fa fa-check"></i>Learning objectives</a></li>
+<li class="chapter" data-level="" data-path="lesson-2---rna-sequencing-part-2.html"><a href="lesson-2---rna-sequencing-part-2.html#creating-a-count-table-for-the-airway-study"><i class="fa fa-check"></i>Creating a count table for the airway study</a></li>
+<li class="chapter" data-level="" data-path="lesson-2---rna-sequencing-part-2.html"><a href="lesson-2---rna-sequencing-part-2.html#deseq2-an-r-package-for-analysing-rna-seq-data"><i class="fa fa-check"></i><code>DESeq2</code>: an R package for analysing RNA-seq data</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-2---rna-sequencing-part-2.html"><a href="lesson-2---rna-sequencing-part-2.html#transforming-the-count-table-to-a-deseq-object"><i class="fa fa-check"></i>Transforming the count table to a DESeq object</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-2---rna-sequencing-part-2.html"><a href="lesson-2---rna-sequencing-part-2.html#normalizing-rna-seq-count-data-for-quality-control"><i class="fa fa-check"></i>Normalizing RNA-seq count data for quality control</a></li>
+<li class="chapter" data-level="" data-path="lesson-2---rna-sequencing-part-2.html"><a href="lesson-2---rna-sequencing-part-2.html#principal-component-analysis"><i class="fa fa-check"></i>Principal component analysis</a></li>
+<li class="chapter" data-level="" data-path="lesson-2---rna-sequencing-part-2.html"><a href="lesson-2---rna-sequencing-part-2.html#visualizing-sample-correlations-in-a-heatmap"><i class="fa fa-check"></i>Visualizing sample correlations in a heatmap</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-2---rna-sequencing-part-2.html"><a href="lesson-2---rna-sequencing-part-2.html#what-are-heatmaps"><i class="fa fa-check"></i>What are heatmaps?</a></li>
+<li class="chapter" data-level="" data-path="lesson-2---rna-sequencing-part-2.html"><a href="lesson-2---rna-sequencing-part-2.html#creating-a-heatmap-with-correlations-for-the-airway-study"><i class="fa fa-check"></i>Creating a heatmap with correlations for the airway study</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-2---rna-sequencing-part-2.html"><a href="lesson-2---rna-sequencing-part-2.html#formatieve-opdracht-1"><i class="fa fa-check"></i>Formatieve opdracht</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-3---rna-sequencing-part-3.html"><a href="lesson-3---rna-sequencing-part-3.html"><i class="fa fa-check"></i>Lesson 3 - RNA sequencing (part 3)</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-3---rna-sequencing-part-3.html"><a href="lesson-3---rna-sequencing-part-3.html#learning-objectives-2"><i class="fa fa-check"></i>Learning objectives</a></li>
+<li class="chapter" data-level="" data-path="lesson-3---rna-sequencing-part-3.html"><a href="lesson-3---rna-sequencing-part-3.html#what-is-a-differential-gene-expression-analysis"><i class="fa fa-check"></i>What is a differential gene expression analysis?</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-3---rna-sequencing-part-3.html"><a href="lesson-3---rna-sequencing-part-3.html#p-values"><i class="fa fa-check"></i>p-values</a></li>
+<li class="chapter" data-level="" data-path="lesson-3---rna-sequencing-part-3.html"><a href="lesson-3---rna-sequencing-part-3.html#fold-changes"><i class="fa fa-check"></i>Fold changes</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-3---rna-sequencing-part-3.html"><a href="lesson-3---rna-sequencing-part-3.html#performing-dge-analysis-with-deseq2"><i class="fa fa-check"></i>Performing DGE analysis with <code>DESeq2</code></a></li>
+<li class="chapter" data-level="" data-path="lesson-3---rna-sequencing-part-3.html"><a href="lesson-3---rna-sequencing-part-3.html#visualizing-the-results-of-the-dge-analysis"><i class="fa fa-check"></i>Visualizing the results of the DGE analysis</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-3---rna-sequencing-part-3.html"><a href="lesson-3---rna-sequencing-part-3.html#count-plots"><i class="fa fa-check"></i>Count plots</a></li>
+<li class="chapter" data-level="" data-path="lesson-3---rna-sequencing-part-3.html"><a href="lesson-3---rna-sequencing-part-3.html#volcano-plots"><i class="fa fa-check"></i>Volcano plots</a></li>
+<li class="chapter" data-level="" data-path="lesson-3---rna-sequencing-part-3.html"><a href="lesson-3---rna-sequencing-part-3.html#heatmaps"><i class="fa fa-check"></i>Heatmaps</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-3---rna-sequencing-part-3.html"><a href="lesson-3---rna-sequencing-part-3.html#formatieve-opdracht-2"><i class="fa fa-check"></i>Formatieve opdracht</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-4---rna-sequencing-part-4.html"><a href="lesson-4---rna-sequencing-part-4.html"><i class="fa fa-check"></i>Lesson 4 - RNA sequencing (part 4)</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-4---rna-sequencing-part-4.html"><a href="lesson-4---rna-sequencing-part-4.html#learning-objectives-3"><i class="fa fa-check"></i>Learning objectives</a></li>
+<li class="chapter" data-level="" data-path="lesson-4---rna-sequencing-part-4.html"><a href="lesson-4---rna-sequencing-part-4.html#annotation-of-the-de-genes"><i class="fa fa-check"></i>Annotation of the DE genes</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-4---rna-sequencing-part-4.html"><a href="lesson-4---rna-sequencing-part-4.html#obtaining-gene-symbols"><i class="fa fa-check"></i>Obtaining gene symbols</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-4---rna-sequencing-part-4.html"><a href="lesson-4---rna-sequencing-part-4.html#go-term-analysis-making-sense-of-the-dge-analysis-results"><i class="fa fa-check"></i>GO term analysis: making sense of the DGE analysis results</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-4---rna-sequencing-part-4.html"><a href="lesson-4---rna-sequencing-part-4.html#what-are-go-terms"><i class="fa fa-check"></i>What are GO terms</a></li>
+<li class="chapter" data-level="" data-path="lesson-4---rna-sequencing-part-4.html"><a href="lesson-4---rna-sequencing-part-4.html#obtaining-go-terms-for-some-genes"><i class="fa fa-check"></i>Obtaining GO terms for some genes</a></li>
+<li class="chapter" data-level="" data-path="lesson-4---rna-sequencing-part-4.html"><a href="lesson-4---rna-sequencing-part-4.html#performing-a-go-term-enrichment-analysis"><i class="fa fa-check"></i>Performing a GO term enrichment analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-4---rna-sequencing-part-4.html"><a href="lesson-4---rna-sequencing-part-4.html#formatieve-opdracht-3"><i class="fa fa-check"></i>Formatieve opdracht</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-5---formatieve-opdracht-rna-seq.html"><a href="lesson-5---formatieve-opdracht-rna-seq.html"><i class="fa fa-check"></i>Lesson 5 - Formatieve opdracht RNA-seq</a></li>
+<li class="chapter" data-level="" data-path="lesson-6---metagenomics-part-1.html"><a href="lesson-6---metagenomics-part-1.html"><i class="fa fa-check"></i>Lesson 6 - Metagenomics (part 1)</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-6---metagenomics-part-1.html"><a href="lesson-6---metagenomics-part-1.html#learning-objectives-4"><i class="fa fa-check"></i>Learning objectives</a></li>
+<li class="chapter" data-level="" data-path="lesson-6---metagenomics-part-1.html"><a href="lesson-6---metagenomics-part-1.html#introduction-to-metagenomics"><i class="fa fa-check"></i>Introduction to metagenomics</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-6---metagenomics-part-1.html"><a href="lesson-6---metagenomics-part-1.html#species-identification-using-k-mer-analysis"><i class="fa fa-check"></i>Species identification using k-mer analysis</a></li>
+<li class="chapter" data-level="" data-path="lesson-6---metagenomics-part-1.html"><a href="lesson-6---metagenomics-part-1.html#the-challenges-of-metagenomics"><i class="fa fa-check"></i>The challenges of metagenomics</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-6---metagenomics-part-1.html"><a href="lesson-6---metagenomics-part-1.html#introduction-to-the-dataset"><i class="fa fa-check"></i>Introduction to the dataset</a></li>
+<li class="chapter" data-level="" data-path="lesson-6---metagenomics-part-1.html"><a href="lesson-6---metagenomics-part-1.html#installing-the-required-software"><i class="fa fa-check"></i>Installing the required software</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-6---metagenomics-part-1.html"><a href="lesson-6---metagenomics-part-1.html#reporting-the-installation-procedure-in-rmarkdown"><i class="fa fa-check"></i>Reporting the installation procedure in Rmarkdown</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-6---metagenomics-part-1.html"><a href="lesson-6---metagenomics-part-1.html#quality-control-of-the-fastq-files"><i class="fa fa-check"></i>Quality control of the fastq files</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-7---metagenomics-part-2.html"><a href="lesson-7---metagenomics-part-2.html"><i class="fa fa-check"></i>Lesson 7 - Metagenomics (part 2)</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-7---metagenomics-part-2.html"><a href="lesson-7---metagenomics-part-2.html#learning-objectives-5"><i class="fa fa-check"></i>Learning objectives</a></li>
+<li class="chapter" data-level="" data-path="lesson-7---metagenomics-part-2.html"><a href="lesson-7---metagenomics-part-2.html#species-identification-using-kraken"><i class="fa fa-check"></i>Species identification using Kraken</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-7---metagenomics-part-2.html"><a href="lesson-7---metagenomics-part-2.html#installing-kraken2"><i class="fa fa-check"></i>Installing <code>kraken2</code></a></li>
+<li class="chapter" data-level="" data-path="lesson-7---metagenomics-part-2.html"><a href="lesson-7---metagenomics-part-2.html#identifying-species-using-kraken2"><i class="fa fa-check"></i>Identifying species using <code>kraken2</code></a></li>
+<li class="chapter" data-level="" data-path="lesson-7---metagenomics-part-2.html"><a href="lesson-7---metagenomics-part-2.html#estimating-species-abundance-using-bracken"><i class="fa fa-check"></i>Estimating species abundance using <code>bracken</code></a></li>
+<li class="chapter" data-level="" data-path="lesson-7---metagenomics-part-2.html"><a href="lesson-7---metagenomics-part-2.html#transforming-the-data-for-plotting-in-r"><i class="fa fa-check"></i>Transforming the data for plotting in R</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-8---metagenomics-part-3.html"><a href="lesson-8---metagenomics-part-3.html"><i class="fa fa-check"></i>Lesson 8 - Metagenomics (part 3)</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-8---metagenomics-part-3.html"><a href="lesson-8---metagenomics-part-3.html#learning-objectives-6"><i class="fa fa-check"></i>Learning objectives</a></li>
+<li class="chapter" data-level="" data-path="lesson-8---metagenomics-part-3.html"><a href="lesson-8---metagenomics-part-3.html#visualizing-the-metagenomics-results"><i class="fa fa-check"></i>Visualizing the metagenomics results</a>
+<ul>
+<li class="chapter" data-level="" data-path="lesson-8---metagenomics-part-3.html"><a href="lesson-8---metagenomics-part-3.html#installing-and-loading-the-required-packages"><i class="fa fa-check"></i>Installing and loading the required packages</a></li>
+<li class="chapter" data-level="" data-path="lesson-8---metagenomics-part-3.html"><a href="lesson-8---metagenomics-part-3.html#visualizing-the-read-count-per-kingdom"><i class="fa fa-check"></i>Visualizing the read count per kingdom</a></li>
+<li class="chapter" data-level="" data-path="lesson-8---metagenomics-part-3.html"><a href="lesson-8---metagenomics-part-3.html#visualizing-the-identified-species"><i class="fa fa-check"></i>Visualizing the identified species</a></li>
+<li class="chapter" data-level="" data-path="lesson-8---metagenomics-part-3.html"><a href="lesson-8---metagenomics-part-3.html#comparing-our-results-to-the-actual-composition"><i class="fa fa-check"></i>Comparing our results to the actual composition</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="lesson-9---formatieve-opdracht-metagenomics.html"><a href="lesson-9---formatieve-opdracht-metagenomics.html"><i class="fa fa-check"></i>Lesson 9 - Formatieve opdracht metagenomics</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Data Analysis Using R 2</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="lesson-5---formatieve-opdracht-rna-seq" class="section level1">
+<h1>Lesson 5 - Formatieve opdracht RNA-seq</h1>
+<div class="dagopdracht">
+<div id="doel-van-de-opdracht" class="section level3">
+<h3>Doel van de opdracht</h3>
+<p>Deze formatieve opdracht dien je in tweetallen te maken (net als de eindopdracht). Het maken van deze opdracht is een goede voorbereiding op de eindopdracht. Aan het einde van les 5 dients deze opdracht af te zijn. Zorg ervoor dat je de resultaten van verschillende onderdelen van deze opdracht verwerkt in een Rmarkdown bestand. Het bestand moet je <strong>voor zondag 2 april 23:59 uur inleveren bij Bas van Gestel (<a href="mailto:bas.vangestel@hu.nl" class="email">bas.vangestel@hu.nl</a>)</strong>.</p>
+</div>
+<div id="introductie" class="section level3">
+<h3>Introductie</h3>
+<p><strong>Stamcellen</strong> zijn cellen die zich kunnen differentiëren tot verschillende celtypen. Stamcellen spelen een belangrijke rol in de ontwikkeling van een organisme. Maar ook volwassen organismen hebben stamcellen, bijvoorbeeld spierstamcellen in de mens. Echter, de volwassen stamcellen zijn minder flexibel dan de embryonale stamcellen en kunnen zich maar tot een beperkt aantal celtypen differentiëren.</p>
+<p>Voor sommige ziektes is het wenselijk om weefsels te herstellen met behulp van stamcellen. Ook kunnen we stamcellen gebruiken om weefsels in het lab te maken die anders niet bestudeerd zouden kunnen worden (bijvoorbeeld hersenweefsel). We zouden daarvoor het liefste stamcellen gebruiken van de patiënt, zodat de weefsels dezelfde genetische achtergrond hebben als de patiënt en ook niet afgestoten zouden worden als ze in de patiënt gebracht zouden worden. Volwassen stamcellen kunnen echter niet voor deze doeleinden gebruikt worden.</p>
+<p>Een veelbelovend alternatief zijn <strong>geïnduceerde pluripotente stamcellen (iPSC)</strong> (Engels: induced pluripotent stem cells). Dit zijn stamcellen die we uit gedifferentieerde huidcellen kunnen maken. Voor het maken van iPSC moeten we de differentiatie terugdraaien: in plaats van dat stamcellen differentiëren naar een celtype, gaan we nu een gedifferentieerd celtype (in dit geval een fibroblast, een bindweefselcel in de huid) dedifferentiëren tot stamcellen. Voor het maken van de iPSC worden vier transcriptiefactoren (MYC, OCT3/4, SOX2 en KLF4) in de fibroblasten tot overexpressie gebracht. Door deze transcriptiefactoren verliest de cel zijn differentiatie en wordt de cel een stamcel.</p>
+<p>Voor deze opdracht maken we gebruik <a href="https://academic.oup.com/nar/article/47/11/5587/5485068?login=false">gepubliceerde data</a>. In deze iPSC studie zijn fibroblasten uit twee proefpersonen gehaald en van deze fibroblasten zijn iPSC gemaakt. De onderzoeksvraag van deze iPSC studie is: wat zijn de verschillen in genexpressie tussen iPSC en fibroblasten? Voor zowel de fibroblasten als de iPSC zijn daarom RNA-seq datasets gemaakt. Voor elke conditie (celtype en proefpersoon/cellijn) zijn twee datasets gegenereerd (duplo metingen). De samples in deze iPSC studie zijn de volgende:</p>
+<table>
+<caption>
+<span id="tab:unnamed-chunk-82">Table 4: </span>Tabel met de sample identifiers en de metadata voor de samples van de iPSC studie.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+GEO Sample id
+</th>
+<th style="text-align:left;">
+Cell line
+</th>
+<th style="text-align:left;">
+Cell type
+</th>
+<th style="text-align:left;">
+Run id
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+GSM3393001
+</td>
+<td style="text-align:left;">
+Fibroblast line 1 (CL1500023)
+</td>
+<td style="text-align:left;">
+Skin derived fibroblast
+</td>
+<td style="text-align:left;">
+SRR7866687
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GSM3393002
+</td>
+<td style="text-align:left;">
+Fibroblast line 1 (CL1500023)
+</td>
+<td style="text-align:left;">
+Skin derived fibroblast
+</td>
+<td style="text-align:left;">
+SRR7866688
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GSM3393003
+</td>
+<td style="text-align:left;">
+Fibroblast line 2 (CL1500024)
+</td>
+<td style="text-align:left;">
+Skin derived fibroblast
+</td>
+<td style="text-align:left;">
+SRR7866689
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GSM3393004
+</td>
+<td style="text-align:left;">
+Fibroblast line 2 (CL1500024)
+</td>
+<td style="text-align:left;">
+Skin derived fibroblast
+</td>
+<td style="text-align:left;">
+SRR7866690
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GSM3393005
+</td>
+<td style="text-align:left;">
+iPSC line 1 (IPS1500030/C2, derived from CL1500023)
+</td>
+<td style="text-align:left;">
+iPSC
+</td>
+<td style="text-align:left;">
+SRR7866691
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GSM3393006
+</td>
+<td style="text-align:left;">
+iPSC line 1 (IPS1500030/C2, derived from CL1500023)
+</td>
+<td style="text-align:left;">
+iPSC
+</td>
+<td style="text-align:left;">
+SRR7866692
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GSM3393007
+</td>
+<td style="text-align:left;">
+iPSC line 2 (IPS1500024/293, derived from CL1500024)
+</td>
+<td style="text-align:left;">
+iPSC
+</td>
+<td style="text-align:left;">
+SRR7866693
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GSM3393008
+</td>
+<td style="text-align:left;">
+iPSC line 2 (IPS1500024/293, derived from CL1500024)
+</td>
+<td style="text-align:left;">
+iPSC
+</td>
+<td style="text-align:left;">
+SRR7866694
+</td>
+</tr>
+</tbody>
+</table>
+<p>Voor de iPSC studie gelden de volgende experimentele details:</p>
+<ul>
+<li>De RNA-seq datasets bestaan uit <strong>paired reads</strong>.</li>
+<li>Voor het genereren van de datasets is gebruik gemaakt van een <strong>stranded protocol</strong> (de reads kunnen dus gebruikt worden om te bepalen of de RNA moleculen afkomstig waren van de plus of min strand).</li>
+</ul>
+<p>Verder zijn voor de iPSC studie verschillende databestanden beschikbaar:</p>
+<ul>
+<li>Sample informatie is beschikbaar in de file <strong>/home/daur2/rnaseq/rnaseq_ipsc/ipsc_sampledata.csv</strong>.</li>
+<li>De fastq files zijn al gedownload en zijn te vinden in <strong>/home/daur2/rnaseq/rnaseq_ipsc/fastq/</strong>.</li>
+<li>De fastqQC resultaten zijn al gegenereerd en zijn te vinden <strong>/home/daur2/rnaseq/rnaseq_ipsc/fastq_output/</strong>.<br />
+</li>
+<li>De alignment is al uitgevoerd. De bam files en alignment statistics zijn te vinden in <strong>/home/daur2/rnaseq/rnaseq_ipsc/bam/</strong>.</li>
+<li>De count table is al gegenereerd. De count table is te vinden in <strong>/home/daur2/rnaseq/rnaseq_ipsc/counts/</strong>.</li>
+</ul>
+<hr />
+</div>
+<div id="onderdeel-les-1" class="section level3">
+<h3>Onderdeel Les 1</h3>
+<div id="onderdeel-1a" class="section level4">
+<h4>Onderdeel 1a</h4>
+<p>Schrijf een korte introductie voor de Rmarkdown met daarin in eigen woorden het doel van jouw onderzoek/analyses.</p>
+</div>
+<div id="onderdeel-1b" class="section level4">
+<h4>Onderdeel 1b</h4>
+<p>Stel dat de sample identifiers in een textfile staan.
+Schrijf een bash script voor het downloaden van de fastq files voor alle identifiers. Zorg ervoor dat dit script een for loop bevat, zodat je niet voor elke fastq file een aparte regel code hoeft te schrijven.</p>
+<p><strong>NB: voer dit script niet uit, want de fastq files zijn al voor jullie gedownload!</strong></p>
+</div>
+<div id="onderdeel-1c" class="section level4">
+<h4>Onderdeel 1c</h4>
+<p>Bekijk de FastQC html rapporten voor de verschillende fastq files. Wat zijn je conclusies?</p>
+</div>
+<div id="onderdeel-1d" class="section level4">
+<h4>Onderdeel 1d</h4>
+<p>Schrijf code voor het uitvoeren van de alignment met de Rsubread package. Voor de alignment kun je gebruik maken van de hg38 genome index die is te vinden <strong>/home/daur2/rnaseq/hg38_index/</strong></p>
+<p><strong>NB: voer dit script niet uit, want de alignment is al voor jullie uitgevoerd!</strong></p>
+</div>
+<div id="onderdeel-1e" class="section level4">
+<h4>Onderdeel 1e</h4>
+<p>In de directory met de bam files kun je ook het bestand ‘alignment_statistics.rds’ vinden. Gebruik dit bestand om een grouped bar graph te maken met daarin voor elk sample zowel het <em>percentage mapped fragments</em> als het <em>percentage unmapped fragments</em>.</p>
+<p>Wat is je conclusie op basis van deze grafiek?</p>
+<hr />
+</div>
+</div>
+<div id="onderdeel-les-2" class="section level3">
+<h3>Onderdeel Les 2</h3>
+<div id="onderdeel-2a" class="section level4">
+<h4>Onderdeel 2a</h4>
+<p>Schrijf code voor het genereren van de count table met de Rsubread package.</p>
+<p><strong>NB: voer dit script niet uit, want de count table is al voor jullie gegenereerd!</strong></p>
+</div>
+<div id="onderdeel-2b" class="section level4">
+<h4>Onderdeel 2b</h4>
+<p>Gebruik de ‘stat’ dataframe uit de count table om een staafdiagram te maken met daarin het <em>percentage assigned reads</em> voor elk sample.</p>
+<p>Wat is je conclusie op basis van deze grafiek?</p>
+</div>
+<div id="onderdeel-2c" class="section level4">
+<h4>Onderdeel 2c</h4>
+<p>Gebruik de count table en het csv bestand met sample informatie om een DESeq2 object te maken.</p>
+</div>
+<div id="onderdeel-2d" class="section level4">
+<h4>Onderdeel 2d</h4>
+<p>Voer een PCA analyse uit en maak een plot van PC1 versus PC2.</p>
+<p>Wat is je conclusie op basis van deze plot?</p>
+</div>
+<div id="onderdeel-2e" class="section level4">
+<h4>Onderdeel 2e</h4>
+<p>Maak een heatmap waarin de correlatiecoëfficiënten voor de verschillende samples zijn weergegeven.</p>
+<p>Wat is je conclusie op basis van deze heatmap?</p>
+<hr />
+</div>
+</div>
+<div id="onderdeel-les-3" class="section level3">
+<h3>Onderdeel Les 3</h3>
+<div id="onderdeel-3a" class="section level4">
+<h4>Onderdeel 3a</h4>
+<p>Voer de DGE analyse uit met behulp van DESeq2. Hoeveel genen zijn er upgereguleerd (adjusted p-value &lt; 0.05 en LFC &gt; 1)? En hoeveel genen zijn er downgereguleerd (adjusted p-value &lt; 0.05 en LFC &lt; -1)?</p>
+<p>Vergelijk de aantallen met de aantallen voor de airway studie. Wat is je conclusie?</p>
+</div>
+<div id="onderdeel-3b" class="section level4">
+<h4>Onderdeel 3b</h4>
+<p>Create a Volcano plot in which you colour all genes with an adjusted p-value &lt; 0.05 and |LFC|&gt;1 darkblue. Also indicate the LFC and p-value thresholds as dashed lines in the plot.</p>
+</div>
+<div id="onderdeel-3c" class="section level4">
+<h4>Onderdeel 3c</h4>
+<p>Maak een heatmap met daarin de count values voor de 15 significante DE genen (adjusted p-waarde &lt; 0.05) met de grootste |LFC|.</p>
+<hr />
+</div>
+</div>
+<div id="onderdeel-les-4" class="section level3">
+<h3>Onderdeel Les 4</h3>
+<div id="onderdeel-4a" class="section level4">
+<h4>Onderdeel 4a</h4>
+<p>Maak een heatmap zoals bij onderdeel 3c. Echter, zorg ervoor dat de rijen nu gelabeld worden met het gensymbool i.p.v. de Entrez identifier.</p>
+</div>
+<div id="onderdeel-4b" class="section level4">
+<h4>Onderdeel 4b</h4>
+<p>Schrijf een functie voor het uitvoeren van de GO term enrichment analyse. Deze functie heeft 4 input argumenten:</p>
+<ol style="list-style-type: decimal">
+<li>DESeq2 results object (<code>results(DESeq(dds))</code>)</li>
+<li>Logische waarde (TRUE of FALSE) die aangeeft of de enrichment analyse gedaan moet worden voor de upgereguleerde genen of voor de downgereguleerde genen.</li>
+<li>Drempelwaarde voor |LFC|.</li>
+<li>Drempelwaarde voor adjusted p-waarde.</li>
+</ol>
+<p>De output van de functie is de summary van de GO term analyse (<code>summary(hyperGTest(test_object))</code>)</p>
+<p>Bijvoorbeeld: <code>gotermAnalysis(ipsc_dge_results, upregulated = FALSE, 1, 0.01)</code> geeft de summary van de enrichment analyse voor de downgereguleerde genen met een LFC &lt; -1 en een adjusted p-waarde &lt; 0.01 voor de genen in het DESeq2 results object <code>ipsc_dge_results</code>.</p>
+</div>
+<div id="onderdeel-4c" class="section level4">
+<h4>Onderdeel 4c</h4>
+<p>Voer een GO term enrichment analyse uit voor de upgereguleerde genen (gedefinieerd als adjusted p-value &lt; 0.01 en LFC &gt; 1) en voor de downgereguleerde genen (gedefinieerd als adjusted p-value &lt; 0.01 en LFC &lt; -1). Maak voor beide analyses een grafiek.</p>
+<p>Wat zijn je conclusies? Welke processen worden er downgereguleerd tijdens de vorming van stamcellen uit fibroblasten? En welke processen worden juist upgereguleerd?</p>
+</div>
+</div>
+</div>
+
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="lesson-4---rna-sequencing-part-4.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="lesson-6---metagenomics-part-1.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": false,
+"twitter": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": false
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "section",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

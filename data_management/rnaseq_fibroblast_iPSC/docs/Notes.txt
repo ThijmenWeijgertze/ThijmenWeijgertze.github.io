@@ -1,0 +1,23 @@
+---
+title: "aantekeningen"
+author: "Thijmen Weijgertze"
+date: "3/28/2023"
+output: html_document
+---
+
+# Les 2
+- Bam files staan opgeslagen als binary --> minder geheugen
+- Sam files zijn groter en gebruiken meer geheugen, maar zijn human readable
+
+Transcripten --> rna rondom de celkern
+Zijn er meer of minder transcripten bij bv een patiënt en zijn het dezelfde transcripten?
+
+telt hoevaak een transcript is gevonden op een locatie
+
+je telt uiteindelijk per gen hoeveel alignments overeen komen
+
+Elke blokje van de heatmap vergelijkt twee .bam files
+
+principle component analysis (PCA)
+
+Mappen = alignen

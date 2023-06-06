@@ -1,0 +1,98 @@
+# Machine learning
+
+# Setup
+
+```{r setup4, echo=FALSE}
+# setting up general settings for chunks
+knitr::opts_chunk$set(
+  warning=FALSE,
+  message=FALSE
+)
+```
+
+```{r loading libraries, warning=TRUE}
+# loading libraries
+library(here)
+library(tidyverse)
+library(reactable)
+```
+
+### Plan of action
+
+##### Introduction
+
+During the "Data Science for biology 2" course every student has the opportunity to learn a new skill for their portfolio. I (Thijmen Weijgertze) have decided to learn the myself the basics of "Machine Learning". This skill will be learned in a span of ca. 4 weeks (around 30 hours). To learn this skill I have set up a goal with a corresponding planning to achieve the this goal.
+
+##### Goal
+
+At the end of this course I want to have created an algorithm able to predict the recurrence of breast cancer using the breast-cancer.data dataset. This algorithm will be written in R using principles from "tidymodels", "CART", "random forest" and possibly other Machine Learning techniques I'll come across.
+
+##### Planning
+
+- Week 1 (7th - 14th of September): Delving into the principles of "tidymodels", "CART", "random forest"
+- Week 2 (14th - 21th of September): Writing my first Machine Learning algorithm
+- Week 3-4 (21th - 6th of June): Apply the learned skills on the breast-cancer.data dataset to predict the recurrence of breast cancer
+
+##### Dataset
+
+```{r loading in data}
+# loading in data
+bcData <- read.csv( 
+  here::here(
+    "data_machineLearning",
+    "breast-cancer.data"
+  ), 
+  header = FALSE, # dataset does not contain column names
+  col.names = c("class", "age", "menopause", "tumor_size", "inv_nodes", "node_caps", "deg_malig", "breast", "breast_quad", "irradiat") # setting column names
+)
+
+# presenting data in table form
+reactable(
+  bcData, 
+  filterable = TRUE,
+  compact = TRUE,
+  bordered = TRUE,
+  defaultPageSize = 5
+  )
+```
+
+This breast cancer domain was obtained from the University Medical Centre, Institute of Oncology, Ljubljana, Yugoslavia. Thanks go to M. Zwitter and M. Soklic for providing the data. The breast-cancer.data domain consist of a total of `r nrow(bcData)` rows and `r ncol(bcData)` columns. From which `r bcData %>% filter(class == "no-recurrence-events") %>% nrow()` instances are no-recurrence-events and `r bcData %>% filter(class == "recurrence-events") %>% nrow()` instances are recurrence-events. 
+
+## The Tidymodels get-started-guide
+
+In order to build a model the tidymodels package and some additional packages must be installed.
+
+```{r installing packages for model building, eval=FALSE}
+# install.packages("tidymodels") # main package
+# 
+# # helper packages in order to use the data included in the tidymodels guide
+# install.packages("readr")
+# install.packages("broom.mixed")
+# install.packages("dotwhisker")
+```
+
+```{r loading packages for model building}
+# loading in the installed packages
+library(tidymodels)
+library(readr)
+library(broom.mixed)
+library(dotwhisker)
+```
+
+For this guide sea urchin data can be loaded from https://tidymodels.org/start/models/urchins.csv
+
+```{r}
+# loading in the data 
+urchins <- read.csv("https://tidymodels.org/start/models/urchins.csv")
+
+# inspecting the data and data types
+reactable(
+  urchins, 
+  filterable = TRUE,
+  compact = TRUE,
+  bordered = TRUE,
+  defaultPageSize = 5
+  )
+```
+
+

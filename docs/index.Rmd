@@ -1,0 +1,24 @@
+---
+title: "Thijmen Weijgertze DataScience portofolio"
+author: "Thijmen Weijgertze"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+bibliography: bibliography.json
+documentclass: book
+output:
+  bookdown::gitbook: default
+---
+
+# Main page
+
+### Introduction
+
+This github page is written by Thijmen Weijgertze using Rstudio. I am a 3rd year Life Science student at HU University of Applied Sciences Utrecht. In the past half year I've followed a DataScience minor provided by the HU. This Github page serves as my DataScience portofolio for showing off my DataScience skills. The course is created by @amdhaanTlscdsfb26v20Workflows2021 based on the "bookdown: Authoring Books and Technical Documents with R Markdown" book from @xieBookdownAuthoringBooks.
+
+### Contact information
+
+- phone: 0630477492
+- www: https://thijmenweijgertze.github.io
+- email: thijmen.lifesciences@gmail.com
+- github: https://github.com/ThijmenWeijgertze
+- linkedin: https://www.linkedin.com/in/thijmen-weijgertze-968a5a265/

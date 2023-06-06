@@ -1,0 +1,17 @@
+hoe kleiner de E value hoe beter (hoe toevallig de vondst is)
+
+paper van kraken lezen
+
+Query sequence is 1 regel in fastq file
+
+kraken hangt labels aan DNA sequenties 
+
+kijkt voor elke k-mer in de database naar matches met bekende genomen (soorten)
+
+Geeft de meest waarschijnlijke soort terug
+
+zoekt het meest waarschijnlijke 
+
+complete kraken +- 100 GB
+
+minikraken: 5 of 8 GB; ca 5% van de k-mers

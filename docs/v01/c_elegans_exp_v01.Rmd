@@ -1,0 +1,146 @@
+---
+title: "C. Elegans plate experiment"
+author: "Thijmen Weijgertze"
+date: '`r Sys.Date()`'
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 1
+    theme: lumen
+---
+<div style="text-align: justify">
+
+```{r setup, echo=FALSE}
+# setting up general settings for chunks
+knitr::opts_chunk$set(
+  warning=FALSE,
+  message=FALSE
+)
+```
+
+### **Setup**
+
+##### Setting a seed and loading packages
+
+```{r setting seed}
+# Seed chosen based on the current year
+set.seed(2023)
+```
+
+```{r packages, message=FALSE, warning=FALSE}
+# Loading packages
+library(tidyverse)
+library(readxl)
+library(here)
+library(reactable)
+library(RColorBrewer)
+```
+
+##### Importing and inspecting the data
+
+```{r importing and inspecting the data}
+# importing xlsx file
+CE_LIQ_FLOW_062_Tidydata <- read_excel(
+  here::here(
+    "data-raw",
+    "CE.LIQ.FLOW.062_Tidydata.xlsx"
+  )
+)
+
+# inspecting data in table format with the reactable package
+reactable(
+  CE_LIQ_FLOW_062_Tidydata, 
+  filterable = TRUE,
+  compact = TRUE,
+  bordered = TRUE,
+  defaultPageSize = 5
+  )
+```
+
+### **Scatterplot**
+
+##### Pseudocode 
+
+- Deciding which columns will be included in the scatterplot
+- Checking and possibly changing the datatypes of those columns 
+- Retrieving log10(0) values by filtering on compConcentration == 0
+- Plotting the data in a scatterplot using ggplot
+- Setting the x-axis to a log10 scale 
+- Adding jitter to spread out points on top of eachother
+
+##### Checking and correcting datatypes needed for the scatterplot
+
+```{r checking and correcting datatypes}
+# Checking the data types of the following columns: RawData, compName, expType and compConcentration
+CE_LIQ_FLOW_062_Tidydata %>% select(RawData, compName, compConcentration, expType) %>% str()
+
+# Changing compConcentration to numeric; changing compName into a factor; changing expType into a factor
+CE_LIQ_FLOW_062_Tidydata$compConcentration <- parse_number(CE_LIQ_FLOW_062_Tidydata$compConcentration)
+CE_LIQ_FLOW_062_Tidydata$compName <- factor(CE_LIQ_FLOW_062_Tidydata$compName, levels = unique(CE_LIQ_FLOW_062_Tidydata$compName))
+CE_LIQ_FLOW_062_Tidydata$expType <- factor(CE_LIQ_FLOW_062_Tidydata$expType, levels = unique(CE_LIQ_FLOW_062_Tidydata$expType))
+
+# Checking the new dataypes and factor levels
+CE_LIQ_FLOW_062_Tidydata %>% select(RawData, compName, compConcentration, expType) %>% str()
+levels(CE_LIQ_FLOW_062_Tidydata$compName)
+levels(CE_LIQ_FLOW_062_Tidydata$expType)
+```
+
+##### Table with log10(0) values per level in expType
+
+```{r table with log10(0) values}
+# Count the total of rows per level in expType
+CE_LIQ_FLOW_062_Total <- 
+  CE_LIQ_FLOW_062_Tidydata %>% 
+  group_by(expType) %>%
+  summarise(total_rows = length(expType))
+
+# Count rows with a log10 equal to 0 per level in expType
+CE_LIQ_FLOW_062_filtered <- 
+  CE_LIQ_FLOW_062_Tidydata %>% 
+  filter(compConcentration == 0) %>% 
+  group_by(expType) %>%
+  summarise(log10_of_0_rows = length(expType))
+
+# Joining tibbles
+left_join(CE_LIQ_FLOW_062_Total, CE_LIQ_FLOW_062_filtered, by="expType")
+
+# Counting all log 10 values to add them in the side note of the scatterplot 
+log_10_0_sum <- sum(CE_LIQ_FLOW_062_filtered[, 'log10_of_0_rows'], na.rm = TRUE)
+
+# https://stackoverflow.com/questions/9676212/how-to-sum-data-frame-column-values
+# https://stackoverflow.com/questions/26114525/how-to-count-how-many-values-per-level-in-a-given-factor#:~:text=Or%20using%20the%20dplyr%20library%3A%20library%20%28dplyr%29%20set.seed,similar%20to%20the%20use%20of%20pipes%20in%20bash.
+```
+
+
+
+
+##### Plotting the CE_LIQ_FLOW_062_Tidydata in a scatterplot
+
+```{r scatterplot, fig.cap="The positive control for this experiments is controlPositive\nThe negative control for this experiment is controlNegative"}
+# Plotting the CE_LIQ_FLOW_062_Tidydata in a scatterplot
+ggplot(
+    data = CE_LIQ_FLOW_062_Tidydata, 
+    aes(x = log10(compConcentration), y = RawData)
+    )+
+  geom_point(
+    aes(color = compName, shape = expType),
+    size = 1.5, 
+    alpha = 0.8,
+    position = position_jitter(width = 0.1) # jitter to spread out values on top of eachother
+    )+
+  labs(
+    title = "Scatterplot CE_LIQ_FLOW_062_Tidydata",
+    caption = paste("Side note:", log_10_0_sum, "values containing a log10 of 0 are not visible in the graph"),
+    x = "log10(compConcentration) in nM"
+  )+
+  scale_color_brewer(palette = "Dark2") # colorblind friendly color scale
+```
+
+### **Statistical tests**
+
+##### Pseudocode 
+
+- 
+
+</div> 
